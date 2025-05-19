@@ -1,9 +1,16 @@
+Código-fonte das aulas sobre [React Native](https://github.com/celkecursos/tutorial-aula-react-native-0-79-typescript.git) 0.79.<br>
+
 ## Requisitos
 
 * Node.js 22 ou superior - Conferir a versão: node -v
 * EXPO GO - Baixar o aplicativo Expo Go da Play Store ou App Store.
 
 ## Como rodar o projeto baixado
+
+Altere o arquivo src/config/api.js e configure o IP da máquina onde a API está sendo executada.
+No curso, a API é executada no próprio computador, então é necessário definir o IP da sua máquina.
+Para obter esse IP, execute o comando abaixo no terminal: <code>ipconfig</code>
+Em seguida, use o valor exibido em Endereço IPv4.
 
 Instalar todas as dependencias indicada no package.json.
 ```
@@ -34,6 +41,11 @@ npx expo start
 
 - Baixar o aplicativo Expo Go da Play Store ou App Store.
 - Ler o QRCode da aplicação com o aplicativo Expo Go.
+
+Realizar chamada para API.
+```
+npm install axios
+```
 
 ## Como enviar o projeto para o GitHub.
 
