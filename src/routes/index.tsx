@@ -16,7 +16,7 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 // Função principal que define as rotas da aplicação
-export default function Routes(){
+export default function Routes() {
     return (
         // Envolve toda a navegação dentro de um container que gerencia o estado da navegação
         <NavigationContainer>
@@ -24,7 +24,13 @@ export default function Routes(){
             <Stack.Navigator>
                 {/* Define cada tela com um nome e o componente associado a ela */}
                 <Stack.Screen name="Home" component={Home} />
-                <Stack.Screen name="UsersList" component={UsersList} />
+                <Stack.Screen
+                    name="UsersList"
+                    component={UsersList}
+                    options={{
+                        title: 'Usuário'
+                    }}
+                />
             </Stack.Navigator>
         </NavigationContainer>
     )
