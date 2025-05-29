@@ -5,11 +5,13 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 // Importar as páginas
 import Home from "../pages/Home";
 import UsersList from "../pages/Users/List";
+import UsersCreate from "../pages/Users/Create";
 
 // Definindo o tipo das rotas (tipagem para segurança com TypeScript)
 export type RootStackParamList = {
     Home: undefined; // sem parâmetros
     UsersList: undefined;
+    UsersCreate: undefined;
 };
 
 // Criando o stack navigator com os tipos definidos acima
@@ -27,6 +29,13 @@ export default function Routes() {
                 <Stack.Screen
                     name="UsersList"
                     component={UsersList}
+                    options={{
+                        title: 'Usuário'
+                    }}
+                />
+                <Stack.Screen
+                    name="UsersCreate"
+                    component={UsersCreate}
                     options={{
                         title: 'Usuário'
                     }}

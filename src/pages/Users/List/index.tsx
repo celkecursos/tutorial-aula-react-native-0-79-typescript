@@ -3,7 +3,7 @@
 import { useCallback, useState } from 'react';
 
 // Importa componentes essenciais do React Native para estilização e layout
-import { Alert, Button, StyleSheet, Text, View } from 'react-native';
+import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 // Importa o hook que permite usar a navegação dentro do componente
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -41,7 +41,7 @@ export default function UsersList() {
 
   // Recuperar os usuários da API
   const getUsers = async () => {
-    
+
     // Fazer a requisição para a API e receber a lista de usuários
     await api.get(`users`)
       .then((response) => { // Acessar o then quando a API retornar status sucesso
@@ -64,27 +64,36 @@ export default function UsersList() {
 
   // Estrutura visual do app
   return (
-    <View style={styles.container}>
-      {/* Texto fixo listar usuários */}
-      <Text style={styles.title}>Listar Usuários</Text>
+    <ScrollView contentContainerStyle={{ flexGrow: 1}}>
+      <View style={styles.container}>
 
-      {/* Ler a lista de usuários */}
-      {users.map((user) => {
-        // Imprimir os dados do usuário
-        return(
-          <View key={user.id}>
-            <Text>ID: {user.id} </Text>
-            <Text>Nome: {user.name} </Text>
-            <Text>E-mail: {user.email} </Text>
-            <Text></Text>
-          </View>
-        )
-      })}
+        {/* Cabeçalho com título e botão */}
+        <View style={styles.header}>
+          {/* Texto fixo listar usuários */}
+          <Text style={styles.title}>Listar</Text>
 
-      {/* Botão para voltar a tela "Home" */}
-      {/* <Button title='Home' onPress={() => navigation.goBack()} /> */}
+          {/* Botão para navegar até a tela "UsersCreate" (cadastrar usuário) */}
+          <Button title='Cadastrar' onPress={() => navigation.navigate('UsersCreate')}></Button>
+        </View>
 
-    </View>
+        {/* Ler a lista de usuários */}
+        {users.map((user) => {
+          // Imprimir os dados do usuário
+          return (
+            <View key={user.id}>
+              <Text>ID: {user.id} </Text>
+              <Text>Nome: {user.name} </Text>
+              <Text>E-mail: {user.email} </Text>
+              <Text></Text>
+            </View>
+          )
+        })}
+
+        {/* Botão para voltar a tela "Home" */}
+        {/* <Button title='Home' onPress={() => navigation.goBack()} /> */}
+
+      </View>
+    </ScrollView>
   );
 }
 
@@ -98,7 +107,14 @@ const styles = StyleSheet.create({
     padding: 10, // Espaçamento interno de 10 pixels
   },
   title: {
-    fontSize: 23,
-    marginBottom: 5
-  }
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  header: {
+    flexDirection: 'row',      // Alinha os itens na horizontal
+    justifyContent: 'space-between', // Um na esquerda e outro na direita
+    alignItems: 'center',      // Alinha verticalmente no centro
+    marginBottom: 20,          // Espaço abaixo do cabeçalho
+  },
 });
