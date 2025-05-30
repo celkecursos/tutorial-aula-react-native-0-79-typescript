@@ -19,6 +19,9 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 // e que pode navegar para outras rotas definidas no RootStackParamList
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'UsersList'>;
 
+// Validar os dados do formulário
+import * as yup from 'yup';
+
 // Importa o arquivo de configuração da API criada
 import api from '../../../config/api';
 
@@ -43,6 +46,9 @@ export default function UsersCreate() {
     // Processar/submeter os dados do formulário
     const addUser = async () => {
 
+        // Validar o formulário com Yup
+        if(!(await validateForm())) return;
+
         // Requisição para a API indicando a rota e os dados
         await api.post('users', { name, email })
             .then((response) => { // Acessar o then quando a API retornar status sucesso
@@ -56,12 +62,46 @@ export default function UsersCreate() {
                         { name: 'Home' },       // índice 0
                         { name: 'UsersList' },  // índice 1 (rota ativa)
                     ],
-                }); 
+                });
 
             }).catch((err) => { // Acessar o catch quando a API retornar status erro
                 console.log(err.response.data);
                 Alert.alert("Ops", err.response?.data?.message ?? "Tente novamente!");
             });
+    }
+
+    // Validar o formulário com Yup
+    const validationSchema = yup.object().shape({
+        name: yup.string()
+            .required("Necessário preencher o campo nome!"),
+        email: yup.string()
+            .required("Necessário preencher o campo e-mail!")
+            .email("Necessário preencher e-mail válido!")
+    });
+
+    // Função assíncrona para validar o formulário
+    const validateForm = async () => {
+        try {
+            // Tenta validar os dados 'name' e 'email' usando o schema definido
+            // 'abortEarly: false' garante que retorne todos os erros, não só o primeiro
+            await validationSchema.validate(
+                { name, email },
+                { abortEarly: false }
+            );
+
+            // Se a validação for bem-sucedida, retorna true
+            return true;
+        } catch (error) {
+
+            // Verifica se o erro é uma instância de ValidationError do yup
+            if(error instanceof yup.ValidationError){
+                // Exibe um alerta com todos os erros separados por quebra de linha
+                Alert.alert('Ops', error.errors.join('\n'));
+            }
+
+            // Retorna false indicando que a validação falhou
+            return false;
+        }
     }
 
     // Estrutura visual do app
