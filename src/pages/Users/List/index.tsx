@@ -3,7 +3,7 @@
 import { useCallback, useState } from 'react';
 
 // Importa componentes essenciais do React Native para estilização e layout
-import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Button, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 // Importa o hook que permite usar a navegação dentro do componente
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -80,12 +80,12 @@ export default function UsersList() {
         {users.map((user) => {
           // Imprimir os dados do usuário
           return (
-            <View key={user.id}>
-              <Text>ID: {user.id} </Text>
-              <Text>Nome: {user.name} </Text>
-              <Text>E-mail: {user.email} </Text>
+            <TouchableOpacity key={user.id} style={styles.userBox} onPress={() => navigation.navigate('UsersView', { id: user.id})}>
+              <Text style={styles.userText}>ID: {user.id} </Text>
+              <Text style={styles.userText}>Nome: {user.name} </Text>
+              <Text style={styles.userText}>E-mail: {user.email} </Text>
               <Text></Text>
-            </View>
+            </TouchableOpacity>
           )
         })}
 
@@ -116,5 +116,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between', // Um na esquerda e outro na direita
     alignItems: 'center',      // Alinha verticalmente no centro
     marginBottom: 20,          // Espaço abaixo do cabeçalho
+  },
+  userBox: {
+    backgroundColor: '#f0f0f0',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  userText: {
+    fontSize: 16,
+    color: '#333',
   },
 });
