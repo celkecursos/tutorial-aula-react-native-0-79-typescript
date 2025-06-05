@@ -3,13 +3,16 @@
 import { useCallback, useState } from 'react';
 
 // Importa componentes essenciais do React Native para estilização e layout
-import { Alert, Button, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 // Importa o hook que permite usar a navegação dentro do componente
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { RouteProp, useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 
 // Importa a definição dos tipos de rotas criadas no arquivo de rotas
 import { RootStackParamList } from '../../../routes';
+
+// Crie o tipo da rota para acessar os parâmetros
+type RouteProps = RouteProp<RootStackParamList, 'UsersView'>;
 
 // Importa o tipo de navegação específico para o Native Stack Navigator
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -25,15 +28,12 @@ import * as yup from 'yup';
 // Importa o arquivo de configuração da API criada
 import api from '../../../config/api';
 
-// Interface para os dados do usuário.
-interface User {
-    id: number;
-    name: string;
-    email: string;
-}
-
 // Função cadastrar usuários
-export default function UsersCreate() {
+export default function UsersEdit() {
+
+    // Receber o id do registro
+    const route = useRoute<RouteProps>();
+    const { id } = route.params;
 
     // Armazenar os dados do usuário
     const [name, setName] = useState('');
@@ -43,24 +43,49 @@ export default function UsersCreate() {
     // Isso permite usar a navegação com segurança de tipos
     const navigation = useNavigation<NavigationProps>();
 
+    // Recuperar os dados do usuário da API
+    const getUser = async () => {
+
+        // Fazer a requisição para a API e receber os dados do usuário
+        await api.get(`users/${id}`)
+            .then((response) => { // Acessar o then quando a API retornar status sucesso
+                // console.log(response.data);
+                setName(response.data.user.name);
+                setEmail(response.data.user.email);
+            }).catch((err) => { // Acessar o catch quando a API retornar status erro
+                Alert.alert("Ops", err.response?.data?.erros ?? "Erro ao carregar dados do usuário!");
+            });
+    }
+
+    // Executar quando o usuário carregar a tela e chamar a função getUser
+    useFocusEffect(
+        useCallback(() => {
+            getUser();
+        }, [id])
+    );
+
     // Processar/submeter os dados do formulário
-    const addUser = async () => {
+    const editUser = async () => {
 
         // Validar o formulário com Yup
-        if(!(await validateForm())) return;
+        if (!(await validateForm())) return;
 
         // Requisição para a API indicando a rota e os dados
-        await api.post('users', { name, email })
+        await api.put(`users/${id}`, { name, email })
             .then((response) => { // Acessar o then quando a API retornar status sucesso
                 // console.log(response.data);
                 Alert.alert("Sucesso", response.data.message);
 
-                // Redirecionar o usuário para tela listar usuários
+                // Redirecionar o usuário para tela visualizar usuário
                 navigation.reset({
-                    index: 1, // Após resetar a tela UsersList será a tela ativa (visível).
+                    index: 2, // Após resetar a tela UsersView será a tela ativa (visível).
                     routes: [
                         { name: 'Home' },       // índice 0
-                        { name: 'UsersList' },  // índice 1 (rota ativa)
+                        { name: 'UsersList' },  // índice 1
+                        {
+                            name: 'UsersView',
+                            params: { id }
+                        },  // índice 2 (rota ativa)
                     ],
                 });
 
@@ -68,6 +93,7 @@ export default function UsersCreate() {
                 // console.log(err.response.data);
                 Alert.alert("Ops", err.response?.data?.message ?? "Tente novamente!");
             });
+
     }
 
     // Validar o formulário com Yup
@@ -94,7 +120,7 @@ export default function UsersCreate() {
         } catch (error) {
 
             // Verifica se o erro é uma instância de ValidationError do yup
-            if(error instanceof yup.ValidationError){
+            if (error instanceof yup.ValidationError) {
                 // Exibe um alerta com todos os erros separados por quebra de linha
                 Alert.alert('Ops', error.errors.join('\n'));
             }
@@ -111,7 +137,7 @@ export default function UsersCreate() {
             {/* Cabeçalho */}
             <View style={styles.header}>
                 {/* Texto fixo cadastrar usuários */}
-                <Text style={styles.title}>Cadastrar</Text>
+                <Text style={styles.title}>Editar</Text>
             </View>
 
             {/* Campo Nome */}
@@ -140,12 +166,9 @@ export default function UsersCreate() {
             <Text style={styles.note}>* Campo obrigatório</Text>
 
             {/* Botão */}
-            <TouchableOpacity style={styles.button} onPress={addUser}>
+            <TouchableOpacity style={styles.button} onPress={editUser}>
                 <Text style={styles.buttonText}>Salvar</Text>
             </TouchableOpacity>
-
-            {/* Botão para voltar a tela "Home" */}
-            {/* <Button title='Home' onPress={() => navigation.goBack()} /> */}
 
         </View>
     );
